@@ -1,9 +1,25 @@
 package rts;
 
+import static rts.CommandLine.ARG_CONFLICT_POLICY;
+import static rts.CommandLine.ARG_IS_PARTIALLY_OBSERVABLE;
+import static rts.CommandLine.ARG_LAUNCH_MODE;
+import static rts.CommandLine.ARG_MAP;
+import static rts.CommandLine.ARG_MAX_CYCLES;
+import static rts.CommandLine.ARG_PLAYER_1;
+import static rts.CommandLine.ARG_PLAYER_2;
+import static rts.CommandLine.ARG_RENDER;
+import static rts.CommandLine.ARG_SERIALIZATION_TYPE;
+import static rts.CommandLine.ARG_SERVER_ADDRESS;
+import static rts.CommandLine.ARG_SERVER_PORT;
+import static rts.CommandLine.ARG_UTT_VERSION;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import net.sourceforge.argparse4j.inf.Namespace;
 
 public class GameSettings {
 
@@ -14,31 +30,55 @@ public class GameSettings {
         CLIENT
     }
 
-    // Networking
-    private String serverAddress = "";
-    private int serverPort = 9898;
-    private LaunchMode launchMode;
+    static final Map<String, Class> AGENTS;
+    static final Class DEFAULT_AI = ai.abstraction.WorkerRush.class;
+    static final boolean DEFAULT_RENDER = true;
+    static final String DEFAULT_SERVER_ADDRESS = "127.0.0.1";
+    static final int DEFAULT_SERVER_PORT = 9898;
+    static final int DEFAULT_SERIALIZATION_TYPE = 2;
+    static final int DEFAULT_MAX_CYCLES = 5000;
+    static final boolean DEFAULT_IS_PARTIALLY_OBSERVABLE = false;
+    static final int DEFAULT_UTT_VERSION = 2;
+    static final int DEFAULT_CONFLICT_POLICY = 1;
 
-    private int serializationType = 1; // Default is JSON
+    // Networking
+    private String serverAddress;
+    private int serverPort;
+    private LaunchMode launchMode;
+    private int serializationType;
 
     // Maps
-    private String mapLocation = "";
+    private String mapLocation;
 
     // Game settings
-    private int maxCycles = 5000;
-    private boolean partiallyObservable = false;
-    private int uttVersion = 1;
-    private int conflictPolicy = 1;
+    private boolean render;
+    private int maxCycles;
+    private boolean partiallyObservable;
+    private int uttVersion;
+    private int conflictPolicy;
     
     // Opponents:
-    private String AI1 = "";
-    private String AI2 = "";
-    
+    private Class AI1;
+    private Class AI2;
 
-    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, 
-                          int serializationType, String mapLocation, int maxCycles, 
-                          boolean partiallyObservable, int uttVersion, int confictPolicy, 
-                          String AI1, String AI2) {
+    static {
+        AGENTS = new HashMap<>();
+        AGENTS.put("WorkerRush", ai.abstraction.WorkerRush.class);
+        AGENTS.put("LightRush", ai.abstraction.LightRush.class);
+        AGENTS.put("HeavyRush", ai.abstraction.HeavyRush.class);
+        AGENTS.put("RangedRush", ai.abstraction.RangedRush.class);
+        AGENTS.put("LightRushPO", ai.abstraction.partialobservability.POLightRush.class);
+        AGENTS.put("NaiveMCTS", ai.mcts.naivemcts.NaiveMCTS.class);
+        AGENTS.put("InformedNaiveMCTS", ai.mcts.informedmcts.InformedNaiveMCTS.class);
+        AGENTS.put("RandomAI", ai.RandomAI.class);
+        AGENTS.put("RandomBiasedAI", ai.RandomBiasedAI.class);
+        AGENTS.put("SocketAI", ai.socket.SocketAI.class);
+    }
+
+    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,
+                          int serializationType, String mapLocation, int maxCycles,
+                          boolean partiallyObservable, int uttVersion, int confictPolicy,
+                          Class AI1, Class AI2, boolean render) {
         this.launchMode = launchMode;
         this.serverAddress = serverAddress;
         this.serverPort = serverPort;
@@ -50,6 +90,7 @@ public class GameSettings {
         this.conflictPolicy = confictPolicy;
         this.AI1 = AI1;
         this.AI2 = AI2;
+        this.render = render;
     }
 
     public String getServerAddress() {
@@ -66,6 +107,10 @@ public class GameSettings {
 
     public String getMapLocation() {
         return mapLocation;
+    }
+
+    public boolean isRender() {
+        return render;
     }
 
     public int getMaxCycles() {
@@ -88,11 +133,11 @@ public class GameSettings {
         return launchMode;
     }
 
-    public String getAI1() {
+    public Class getAI1() {
         return AI1;
     }
 
-    public String getAI2() {
+    public Class getAI2() {
         return AI2;
     }
 
@@ -123,15 +168,43 @@ public class GameSettings {
         int uttVersion = readIntegerProperty(prop, "UTT_version", 2);
         int conflictPolicy = readIntegerProperty(prop, "conflict_policy", 1);
         LaunchMode launchMode = LaunchMode.valueOf(prop.getProperty("launch_mode"));
-        String AI1 = prop.getProperty("AI1");
-        String AI2 = prop.getProperty("AI2");
+        Class AI1 = null;
+        Class AI2 = null;
+        try {
+            AI1 = Class.forName(prop.getProperty("AI1"));
+            AI2 = Class.forName(prop.getProperty("AI2"));
+        } catch (ClassNotFoundException e) {
+            // do nothing
+        }
 
         return new GameSettings(launchMode, serverAddress, serverPort,
                                 serializationType, mapLocation, maxCycles,
                                 partiallyObservable, uttVersion, conflictPolicy, 
-                                AI1, AI2);
+                                AI1, AI2, true);
     }
-    
+
+    /**
+     * Load game settings from command line arguments.
+     *
+     * @param namespace An argparse4j args container.
+     * @return Game settings.
+     */
+    public static GameSettings loadFromArgs(Namespace namespace) {
+        return new GameSettings(
+            LaunchMode.valueOf(namespace.getString(ARG_LAUNCH_MODE).toUpperCase()),
+            namespace.getString(ARG_SERVER_ADDRESS),
+            namespace.getInt(ARG_SERVER_PORT),
+            namespace.getInt(ARG_SERIALIZATION_TYPE),
+            getMapFilename(namespace.getString(ARG_MAP)),
+            namespace.getInt(ARG_MAX_CYCLES),
+            namespace.getBoolean(ARG_IS_PARTIALLY_OBSERVABLE),
+            namespace.getInt(ARG_UTT_VERSION),
+            namespace.getInt(ARG_CONFLICT_POLICY),
+            AGENTS.getOrDefault(namespace.getString(ARG_PLAYER_1), DEFAULT_AI),
+            AGENTS.getOrDefault(namespace.getString(ARG_PLAYER_2), DEFAULT_AI),
+            namespace.getBoolean(ARG_RENDER)
+        );
+    }
     
     public static int readIntegerProperty(Properties prop, String name, int defaultValue)
     {
@@ -139,7 +212,10 @@ public class GameSettings {
         if (stringValue == null) return defaultValue;
         return Integer.parseInt(stringValue);
     }
-    
+
+    private static String getMapFilename(String map) {
+        return String.format("maps/%s.xml", map);
+    }
 
     @Override
     public String toString() {

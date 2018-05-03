@@ -70,11 +70,9 @@ public class MicroRTS {
         GameState gs = new GameState(pgs, utt);
         int PERIOD = 20;
         boolean gameover = false;
-        
-        Constructor cons1 = Class.forName(gameSettings.getAI1()).getConstructor(UnitTypeTable.class);
-        AI ai1 = (AI)cons1.newInstance(utt);
-        Constructor cons2 = Class.forName(gameSettings.getAI2()).getConstructor(UnitTypeTable.class);
-        AI ai2 = (AI)cons2.newInstance(utt);
+
+        AI ai1 = (AI) gameSettings.getAI1().getConstructor(UnitTypeTable.class).newInstance(utt);
+        AI ai2 = (AI) gameSettings.getAI2().getConstructor(UnitTypeTable.class).newInstance(utt);
 
         JFrame w = PhysicalGameStatePanel.newVisualizer(gs,640,640,gameSettings.isPartiallyObservable(),
                                                         PhysicalGameStatePanel.COLORSCHEME_BLACK);
@@ -84,7 +82,7 @@ public class MicroRTS {
             if (System.currentTimeMillis()>=nextTimeToUpdate) {
                 if (gameSettings.isPartiallyObservable()) {
                     PlayerAction pa1 = ai1.getAction(0, new PartiallyObservableGameState(gs,0));
-                    PlayerAction pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));            
+                    PlayerAction pa2 = ai2.getAction(1, new PartiallyObservableGameState(gs,1));
                     gs.issueSafe(pa1);
                     gs.issueSafe(pa2);
                 } else {
@@ -107,6 +105,6 @@ public class MicroRTS {
             }
         }while(!gameover && gs.getTime()<gameSettings.getMaxCycles());
         ai1.gameOver(gs.winner());
-        ai2.gameOver(gs.winner());        
-    }       
+        ai2.gameOver(gs.winner());
+    }
 }
