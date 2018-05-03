@@ -195,7 +195,7 @@ public class GameSettings {
             namespace.getString(ARG_SERVER_ADDRESS),
             namespace.getInt(ARG_SERVER_PORT),
             namespace.getInt(ARG_SERIALIZATION_TYPE),
-            getMapFilename(namespace.getString(ARG_MAP)),
+            namespace.getString(ARG_MAP),
             namespace.getInt(ARG_MAX_CYCLES),
             namespace.getBoolean(ARG_IS_PARTIALLY_OBSERVABLE),
             namespace.getInt(ARG_UTT_VERSION),
@@ -211,10 +211,6 @@ public class GameSettings {
         String stringValue = prop.getProperty(name);
         if (stringValue == null) return defaultValue;
         return Integer.parseInt(stringValue);
-    }
-
-    private static String getMapFilename(String map) {
-        return String.format("maps/%s.xml", map);
     }
 
     @Override

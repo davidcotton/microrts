@@ -44,7 +44,7 @@ public abstract class Game {
       this.pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
     } catch (Exception e) {
       throw new IllegalArgumentException(
-          String.format("Unable to map '%s'", gameSettings.getMapLocation()));
+          String.format("Error loading map '%s'", gameSettings.getMapLocation()));
     }
     this.gameState = new GameState(pgs, unitTypeTable);
     this.players = new ArrayList<>();
