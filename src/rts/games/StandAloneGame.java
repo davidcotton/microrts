@@ -1,4 +1,4 @@
-package rts.gamemodes;
+package rts.games;
 
 import rts.GameSettings;
 

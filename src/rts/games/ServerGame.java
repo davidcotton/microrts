@@ -1,4 +1,4 @@
-package rts.gamemodes;
+package rts.games;
 
 import static ai.socket.SocketAI.LANGUAGE_JSON;
 import static ai.socket.SocketAI.LANGUAGE_XML;

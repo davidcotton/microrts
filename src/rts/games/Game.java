@@ -1,4 +1,4 @@
-package rts.gamemodes;
+package rts.games;
 
 import static gui.PhysicalGameStatePanel.COLORSCHEME_BLACK;
 
@@ -42,9 +42,11 @@ public abstract class Game {
         new UnitTypeTable(gameSettings.getUTTVersion(), gameSettings.getConflictPolicy());
     try {
       this.pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
+    } catch (IllegalArgumentException e) {
+      throw e;
     } catch (Exception e) {
-      throw new IllegalArgumentException(
-          String.format("Error loading map '%s'", gameSettings.getMapLocation()));
+      e.printStackTrace();
+      throw new RuntimeException("Error loading game state");
     }
     this.gameState = new GameState(pgs, unitTypeTable);
     this.players = new ArrayList<>();
