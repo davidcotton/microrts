@@ -127,19 +127,18 @@ public abstract class Game {
    * Every player takes one action.
    */
   void takeAction() throws Exception {
-    List<PlayerAction> playerActions = new ArrayList<>();
     for (int id = 0; id < players.size(); id++) {
       GameState gs =
           gameSettings.isPartiallyObservable()
               ? new PartiallyObservableGameState(gameState, id)
               : gameState;
       AI player = players.get(id);
-      PlayerAction playerAction = player.getAction(id, gs);
-      playerActions.add(playerAction);
-    }
-
-    for (PlayerAction pa : playerActions) {
-      gameState.issueSafe(pa);
+      try {
+        PlayerAction playerAction = player.getAction(id, gs);
+        gameState.issueSafe(playerAction);
+      } catch (Exception e) {
+        // do nothing (invalid action)
+      }
     }
   }
 
@@ -168,9 +167,6 @@ public abstract class Game {
    * Print the game state.
    */
   void printGameResults() throws Exception {
-    System.out.println(
-        String.format("Time: %s\nWinner: %s\n", gameState.getTime(), gameState.winner()));
-
     PrintWriter writer = new PrintWriter(System.out);
     gameState.toJSON(writer);
     writer.flush();
