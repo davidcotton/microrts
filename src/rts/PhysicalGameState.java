@@ -448,7 +448,7 @@ public class PhysicalGameState {
 
     /**
      * Returns an array with true if the given position has
-     * {@link PhysicalGameState.TERRAIN_NONE}
+     * {@link PhysicalGameState#TERRAIN_NONE}
      *
      * @return
      */
