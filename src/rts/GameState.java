@@ -751,7 +751,11 @@ public class GameState {
      */
     public void toJSON(Writer w) throws Exception {
         w.write("{");
-        w.write("\"time\":" + time + ",\"pgs\":");
+        w.write("\"time\":" + time + ",");
+        if (winner() != -1) {
+            w.write("\"winner\":" + winner() + ",");
+        }
+        w.write("\"pgs\":");
         pgs.toJSON(w);
         w.write(",\"actions\":[");
         boolean first = true;
