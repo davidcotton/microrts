@@ -86,9 +86,7 @@ public class CommandLine {
       System.exit(1);
     }
 
-    final GameSettings gameSettings = GameSettings.loadFromArgs(namespace);
-    System.out.println(gameSettings);
-    final CommandLine commandLine = new CommandLine(gameSettings);
+    final CommandLine commandLine = new CommandLine(GameSettings.loadFromArgs(namespace));
     commandLine.run();
 
     System.exit(0);
@@ -108,6 +106,7 @@ public class CommandLine {
       case STANDALONE:
         // fall through
       default:
+        System.out.println(gameSettings);
         new StandAloneGame(gameSettings).run();
     }
   }
