@@ -68,11 +68,24 @@ public class GameSettings {
         AGENTS.put("HeavyRush", ai.abstraction.HeavyRush.class);
         AGENTS.put("RangedRush", ai.abstraction.RangedRush.class);
         AGENTS.put("LightRushPO", ai.abstraction.partialobservability.POLightRush.class);
-        AGENTS.put("NaiveMCTS", ai.mcts.naivemcts.NaiveMCTS.class);
         AGENTS.put("InformedNaiveMCTS", ai.mcts.informedmcts.InformedNaiveMCTS.class);
         AGENTS.put("RandomAI", ai.RandomAI.class);
         AGENTS.put("RandomBiasedAI", ai.RandomBiasedAI.class);
         AGENTS.put("SocketAI", ai.socket.SocketAI.class);
+        AGENTS.put("BasicConfigurableScript", ai.puppet.BasicConfigurableScript.class);
+        AGENTS.put("PortfolioAI", ai.portfolio.PortfolioAI.class);
+        AGENTS.put("PGSAI", ai.portfolio.portfoliogreedysearch.PGSAI.class);
+        AGENTS.put("IDRTMinimax", ai.minimax.RTMiniMax.IDRTMinimax.class);
+        AGENTS.put("IDRTMinimaxRandomized", ai.minimax.RTMiniMax.IDRTMinimaxRandomized.class);
+        AGENTS.put("IDABCD", ai.minimax.ABCD.IDABCD.class);
+        AGENTS.put("MonteCarlo", ai.montecarlo.MonteCarlo.class);
+        AGENTS.put("NaiveMCTS", ai.mcts.naivemcts.NaiveMCTS.class);
+        AGENTS.put("UCT", ai.mcts.uct.UCT.class);
+        AGENTS.put("DownsamplingUCT", ai.mcts.uct.DownsamplingUCT.class);
+        AGENTS.put("UCTUnitActions", ai.mcts.uct.UCTUnitActions.class);
+        AGENTS.put("AHTNAI", ai.ahtn.AHTNAI.class);
+        AGENTS.put("PuppetABCDSingle", ai.puppet.PuppetSearchAB.class);
+        AGENTS.put("PuppetMCTSBasic", ai.puppet.PuppetSearchMCTS.class);
     }
 
     private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,
