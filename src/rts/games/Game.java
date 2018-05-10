@@ -127,18 +127,22 @@ public abstract class Game {
    * Every player takes one action.
    */
   void takeAction() throws Exception {
+    PlayerAction[] playerActions = new PlayerAction[players.size()];
+    // generate actions
     for (int id = 0; id < players.size(); id++) {
-      GameState gs =
-          gameSettings.isPartiallyObservable()
-              ? new PartiallyObservableGameState(gameState, id)
-              : gameState;
+      GameState gs = gameSettings.isPartiallyObservable()
+          ? new PartiallyObservableGameState(gameState, id)
+          : gameState;
       AI player = players.get(id);
       try {
-        PlayerAction playerAction = player.getAction(id, gs);
-        gameState.issueSafe(playerAction);
+        playerActions[id] = player.getAction(id, gs);
       } catch (Exception e) {
         // do nothing (invalid action)
       }
+    }
+    // conduct actions
+    for (int id = 0; id < players.size(); id++) {
+        gameState.issueSafe(playerActions[id]);
     }
   }
 
