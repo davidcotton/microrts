@@ -53,6 +53,7 @@ import ai.montecarlo.lsi.LSI;
 import ai.portfolio.PortfolioAI;
 import ai.portfolio.portfoliogreedysearch.PGSAI;
 import ai.puppet.PuppetSearchMCTS;
+import ai.socket.SocketAI;
 import ai.stochastic.UnitActionProbabilityDistribution;
 import gui.MouseController;
 import gui.PhysicalGameStateMouseJFrame;
@@ -124,6 +125,7 @@ public class FEStatePane extends JPanel {
     public static Class AIs[] = {PassiveAI.class,
                    MouseController.class,
                    RandomAI.class,
+                   SocketAI.class,
                    RandomBiasedAI.class,
                    WorkerRush.class,
                    LightRush.class,
@@ -553,6 +555,8 @@ public class FEStatePane extends JPanel {
                                 try {
                                     AI ai1 = createAI(aiComboBox[0].getSelectedIndex(), 0, currentUtt);
                                     AI ai2 = createAI(aiComboBox[1].getSelectedIndex(), 1, currentUtt);
+                                    connectIfSocketAI(ai1);
+                                    connectIfSocketAI(ai2);
                                     int PERIOD1 = Integer.parseInt(defaultDelayField.getText());
                                     int PERIOD2 = Integer.parseInt(defaultDelayField.getText());;
                                     JFormattedTextField t1 = (JFormattedTextField)AIOptionsPanelComponents[0].get("TimeBudget");
@@ -767,7 +771,21 @@ public class FEStatePane extends JPanel {
         mouseListener = new FEStateMouseListener(statePanel, currentUtt);
         statePanel.addMouseListener(mouseListener);              
     }
-    
+
+    private void connectIfSocketAI(AI ai) {
+        if(ai instanceof SocketAI || (ai instanceof PseudoContinuingAI && ((PseudoContinuingAI)ai).getbaseAI() instanceof SocketAI )) {
+            try {
+                if(ai instanceof SocketAI) {
+                    ((SocketAI) ai).connectToServer();
+                }
+                else {
+                    ((SocketAI) ((PseudoContinuingAI) ai).getbaseAI()).connectToServer();
+                }
+            }catch(Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     public void setState(GameState gs) {
         statePanel.setStateDirect(gs);
@@ -809,43 +827,43 @@ public class FEStatePane extends JPanel {
             // set parameters:
             List<ParameterSpecification> parameters = ai.getParameters();
             for(ParameterSpecification p:parameters) {
-                if (p.type == int.class) {
+                if (p.type == int.class || p.type == Integer.class) {
                     JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
                     int v = Integer.parseInt(f.getText());
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, v);
                     
                 } else if (p.type == long.class) {
                     JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
                     long v = Long.parseLong(f.getText());
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, v);
                     
                 } else if (p.type == float.class) {
                     JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
                     float v = Float.parseFloat(f.getText());
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, v);
                     
                 } else if (p.type == double.class) {
                     JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
                     double v = Double.parseDouble(f.getText());
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, v);
                     
                 } else if (p.type == String.class) {
                     JFormattedTextField f = (JFormattedTextField)AIOptionsPanelComponents[player].get(p.name);
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, f.getText());
 
                 } else if (p.type == boolean.class) {
                     JCheckBox f = (JCheckBox)AIOptionsPanelComponents[player].get(p.name);
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, f.isSelected());
                     
                 } else {
                     JComboBox f = (JComboBox)AIOptionsPanelComponents[player].get(p.name);
-                    Method setter = ai.getClass().getMethod("set" + p.name, p.type);
+                    Method setter = ai.getClass().getMethod("set" + p.name.replace(" ", ""), p.type);
                     setter.invoke(ai, f.getSelectedItem());
                 }
             }
@@ -889,6 +907,7 @@ public class FEStatePane extends JPanel {
         List<ParameterSpecification> parameters = AIInstance.getParameters();
         for(ParameterSpecification p:parameters) {
             if (p.type == int.class ||
+                p.type == Integer.class ||
                 p.type == long.class ||
                 p.type == float.class ||
                 p.type == double.class ||

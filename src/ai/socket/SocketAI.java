@@ -40,7 +40,19 @@ public class SocketAI extends AIWithComputationBudget {
     Socket socket = null;
     BufferedReader in_pipe = null;
     PrintWriter out_pipe = null;
-    
+
+    public void setServerAddress(String serverAddress) {
+        this.serverAddress = serverAddress;
+    }
+
+    public void setServerPort(int serverPort) {
+        this.serverPort = serverPort;
+    }
+
+    public void setLanguage(int a_language) {
+        this.communication_language = a_language;
+    }
+
     public SocketAI(UnitTypeTable a_utt) {
         super(100,-1);
         utt = a_utt;
@@ -285,8 +297,8 @@ public class SocketAI extends AIWithComputationBudget {
         List<ParameterSpecification> l = new ArrayList<>();
         
         l.add(new ParameterSpecification("Server Address", String.class, "127.0.0.1"));
-        l.add(new ParameterSpecification("Server Port", Integer.class, 9898));
-        l.add(new ParameterSpecification("Language", Integer.class, LANGUAGE_XML));
+        l.add(new ParameterSpecification("Server Port", int.class, 9898));
+        l.add(new ParameterSpecification("Language", int.class, LANGUAGE_XML));
         
         return l;
     }
