@@ -146,10 +146,12 @@ public class XMLSocketWrapperAI {
                         out.append("ack\n");
                         out.flush();
                     } else if (input.startsWith("gameOver")) {
-                        String []tokens = input.split(" ");
-                        int winner = Integer.parseInt(tokens[1]);
+                        String []tokens = input.split("\n");
+                        GameState gameState = GameState
+                            .fromXML(new SAXBuilder().build(new StringReader(tokens[1])).getRootElement(), utt);
+                        int winner = gameState.winner();
                         if (DEBUG>=1) System.out.println("gameOver " + winner);
-                        ai.gameOver(winner);
+                        ai.gameOver(gameState);
                         out.append("ack\n");
                         out.flush();
                     }

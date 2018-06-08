@@ -104,7 +104,7 @@ public class MicroRTS {
                 }
             }
         }while(!gameover && gs.getTime()<gameSettings.getMaxCycles());
-        ai1.gameOver(gs.winner());
-        ai2.gameOver(gs.winner());
+        ai1.gameOver(gs);
+        ai2.gameOver(gs);
     }
 }

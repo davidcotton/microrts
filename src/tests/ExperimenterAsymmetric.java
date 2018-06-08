@@ -141,8 +141,8 @@ public class ExperimenterAsymmetric {
                         } while (!gameover && 
                                  (gs.getTime() < max_cycles) && 
                                  (gs.getTime() - lastTimeActionIssued < max_inactive_cycles));
-                        ai1.gameOver(gs.winner());
-                        ai2.gameOver(gs.winner());
+                        ai1.gameOver(gs);
+                        ai2.gameOver(gs);
                         if(saveTrace){
                         	te = new TraceEntry(gs.getPhysicalGameState().clone(), gs.getTime());
                         	trace.addEntry(te);

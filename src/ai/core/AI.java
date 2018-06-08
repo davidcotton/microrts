@@ -74,7 +74,7 @@ public abstract class AI {
     
     
     // Notifies the AI that the game is over, and reports who was the winner
-    public void gameOver(int winner) throws Exception
+    public void gameOver(GameState gameState) throws Exception
     {
     }
 } 

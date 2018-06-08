@@ -275,12 +275,20 @@ public class SocketAI extends AIWithComputationBudget {
     
     
     @Override
-    public void gameOver(int winner) throws Exception
+    public void gameOver(GameState gameState) throws Exception
     {
+        out_pipe.append("gameOver\n");
+
         // send the game state:
-        out_pipe.append("gameOver " + winner + "\n");
-        out_pipe.flush();
-                
+        if (communication_language == LANGUAGE_XML) {
+            XMLWriter w = new XMLWriter(out_pipe, " ");
+            gameState.toxml(w);
+            w.getWriter().append("\n").flush();
+        } else if (communication_language == LANGUAGE_JSON) {
+            gameState.toJSON(out_pipe);
+            out_pipe.append("\n").flush();
+        }
+
         // wait for ack:
         in_pipe.readLine();        
     }

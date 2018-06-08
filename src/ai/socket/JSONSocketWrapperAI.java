@@ -144,10 +144,11 @@ public class JSONSocketWrapperAI {
                         out.append("ack\n");
                         out.flush();
                     } else if (input.startsWith("gameOver")) {
-                        String []tokens = input.split(" ");
-                        int winner = Integer.parseInt(tokens[1]);
+                        String []tokens = input.split("\n");
+                        GameState gameState = GameState.fromJSON(tokens[1], utt);
+                        int winner = gameState.winner();
                         if (DEBUG>=1) System.out.println("gameOver " + winner);
-                        ai.gameOver(winner);
+                        ai.gameOver(gameState);
                         out.append("ack\n");
                         out.flush();
                     }

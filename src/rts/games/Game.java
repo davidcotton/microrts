@@ -119,7 +119,7 @@ public abstract class Game {
     } while (!gameOver && gameState.getTime() < gameSettings.getMaxCycles());
 
     for (AI player : players) {
-      player.gameOver(gameState.winner());
+      player.gameOver(gameState);
     }
   }
 
