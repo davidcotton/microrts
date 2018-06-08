@@ -249,6 +249,7 @@ public class PhysicalGameStatePanel extends JPanel {
         int gridx = (dx-64)/pgs.getWidth();
         int gridy = (dy-64)/pgs.getHeight();
         int grid = Math.min(gridx,gridy);
+        int halfgrid = grid / 2;
         int sizex = grid*pgs.getWidth();
         int sizey = grid*pgs.getHeight();
 
@@ -358,8 +359,8 @@ public class PhysicalGameStatePanel extends JPanel {
             int reduction = 0;
 
             if (!fullObservability &&
-                drawFromPerspectiveOfPlayer>=0 &&
-                !pogs[drawFromPerspectiveOfPlayer].observable(u.getX(), u.getY())) continue;
+                    drawFromPerspectiveOfPlayer>=0 &&
+                    !pogs[drawFromPerspectiveOfPlayer].observable(u.getX(), u.getY())) continue;
 
             // Draw the action:
             UnitActionAssignment uaa = gs.getActionAssignment(u);
@@ -428,25 +429,30 @@ public class PhysicalGameStatePanel extends JPanel {
                 if (colorScheme==COLORSCHEME_WHITE) g2d.setColor(Color.gray);
             }
             if (u.getType().name.equals("Worker")) {
-                g2d.setColor(Color.gray);
-                reduction = grid/4;
+                g2d.setColor(playerColor);
+                reduction = grid/3;
             }
             if (u.getType().name.equals("Light")) {
-                g2d.setColor(Color.orange);
+                g2d.setColor(playerColor);
                 reduction = grid/8;
             }
-            if (u.getType().name.equals("Heavy")) g2d.setColor(Color.yellow);
+            if (u.getType().name.equals("Heavy")) g2d.setColor(playerColor);
             if (u.getType().name.equals("Ranged")) {
-                g2d.setColor(Color.cyan);
-                reduction = grid/8;
+                g2d.setColor(playerColor);
+                reduction = grid/4;
             }
 
-            if (!u.getType().canMove) {
+            if (!u.getType().canMove || u.getType().name.equals("Worker")) {
                 g2d.fillRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                 g2d.setColor(playerColor);
                 if (panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
                 g2d.drawRect(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
-            } else {
+            } else if(u.getType().name.equals("Ranged")) {
+                g2d.fillPolygon(new int[]{u.getX()*grid+halfgrid, u.getX()*grid+halfgrid-reduction,u.getX()*grid+halfgrid+reduction},
+                        new int[]{u.getY()*grid+halfgrid-reduction, u.getY()*grid+halfgrid+reduction, u.getY()*grid+halfgrid+reduction}, 3);
+                if(panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
+            }
+            else {
                 g2d.fillOval(u.getX()*grid+reduction, u.getY()*grid+reduction, grid-reduction*2, grid-reduction*2);
                 g2d.setColor(playerColor);
                 if (panel!=null && panel.toHighLight.contains(u)) g2d.setColor(Color.green);
