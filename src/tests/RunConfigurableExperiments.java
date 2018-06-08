@@ -366,6 +366,7 @@ public class RunConfigurableExperiments {
         String traceDir = null;
         boolean saveTrace = false;
         boolean saveZip = false;
+        boolean visualise = false;
         if (args.length >= 6) {
             saveTrace = true;
             saveZip = true;
@@ -374,19 +375,19 @@ public class RunConfigurableExperiments {
         if (true) {
             if (asymetric) {
                 ExperimenterAsymmetric.runExperiments(bots1, bots2,
-                        maps, utt, iterations, 3000, 300, false, out, saveTrace, saveZip, traceDir);
+                        maps, utt, iterations, 3000, 300, visualise, out, saveTrace, saveZip, traceDir);
             } else {
-                Experimenter.runExperiments(bots1, maps, utt, iterations, 3000, 300, false, out,
+                Experimenter.runExperiments(bots1, maps, utt, iterations, 3000, 300, visualise, out,
                         -1, true, false, saveTrace, saveZip, traceDir);
             }
         } else {// Separate the matches by map:
             for (PhysicalGameState map : maps) {
                 if (asymetric) {
                     ExperimenterAsymmetric.runExperiments(bots1, bots2,
-                            Collections.singletonList(map), utt, iterations, 3000, 300, false, out, saveTrace, saveZip, traceDir);
+                            Collections.singletonList(map), utt, iterations, 3000, 300, visualise, out, saveTrace, saveZip, traceDir);
                 } else {
                     Experimenter.runExperiments(bots1,
-                            Collections.singletonList(map), utt, iterations, 3000, 300, false, out,
+                            Collections.singletonList(map), utt, iterations, 3000, 300, visualise, out,
                             -1, true, false, saveTrace, saveZip, traceDir);
                 }
             }
