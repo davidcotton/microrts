@@ -19,6 +19,7 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import rts.GameState;
 import rts.PlayerAction;
+import rts.games.StopGameException;
 import rts.units.UnitTypeTable;
 import util.XMLWriter;
 
@@ -91,7 +92,6 @@ public class SocketAI extends AIWithComputationBudget {
             while(in_pipe.ready()) in_pipe.readLine();
 
             if (DEBUG>=1) System.out.println("SocketAI: welcome message received");
-            reset();
         }catch(Exception e) {
             e.printStackTrace();
         }
@@ -136,7 +136,10 @@ public class SocketAI extends AIWithComputationBudget {
             if (DEBUG>=1) System.out.println("SocketAI: budgetd sent, waiting for ack");
             
             // wait for ack:
-            in_pipe.readLine();
+            String input = in_pipe.readLine();
+            if (input == null || input.startsWith("stop")) {
+                throw new StopGameException();
+            }
             while(in_pipe.ready()) in_pipe.readLine();
 
             if (DEBUG>=1) System.out.println("SocketAI: ack received");
@@ -165,7 +168,9 @@ public class SocketAI extends AIWithComputationBudget {
             while(in_pipe.ready()) in_pipe.readLine();
             if (DEBUG>=1) System.out.println("SocketAI: ack received");
 
-        }catch(Exception e) {
+        } catch(StopGameException e) {
+            throw e;
+        } catch(Exception e) {
             e.printStackTrace();
         }
     }
@@ -290,10 +295,10 @@ public class SocketAI extends AIWithComputationBudget {
         }
 
         // wait for ack:
-        in_pipe.readLine();        
+        in_pipe.readLine();
     }
-    
-    
+
+
     @Override
     public AI clone() {
         return new SocketAI(TIME_BUDGET, ITERATIONS_BUDGET, serverAddress, serverPort, communication_language, utt);

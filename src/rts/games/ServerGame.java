@@ -30,10 +30,10 @@ public class ServerGame extends Game {
   }
 
   @Override
-  void beforeGame() throws Exception {
+  void initialize() throws Exception {
     ServerSocket serverSocket = new ServerSocket(gameSettings.getServerPort());
     socket = serverSocket.accept();
-    super.beforeGame();
+    super.initialize();
   }
 
   @Override

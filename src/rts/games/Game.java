@@ -3,6 +3,7 @@ package rts.games;
 import static gui.PhysicalGameStatePanel.COLORSCHEME_BLACK;
 
 import ai.core.AI;
+import ai.socket.SocketAI;
 import gui.PhysicalGameStatePanel;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
@@ -25,8 +26,7 @@ public abstract class Game {
   private final int GAME_UPDATE_PERIOD = 20;
 
   final GameSettings gameSettings;
-  final GameState gameState;
-  final PhysicalGameState pgs;
+  GameState gameState;
   final UnitTypeTable unitTypeTable;
   final List<AI> players;
   JFrame window = null;
@@ -38,10 +38,11 @@ public abstract class Game {
    */
   public Game(GameSettings gameSettings) {
     this.gameSettings = gameSettings;
+    PhysicalGameState pgs;
     this.unitTypeTable =
         new UnitTypeTable(gameSettings.getUTTVersion(), gameSettings.getConflictPolicy());
     try {
-      this.pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
+      pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
     } catch (IllegalArgumentException e) {
       throw e;
     } catch (Exception e) {
@@ -53,34 +54,27 @@ public abstract class Game {
   }
 
   /**
-   * Run a single game.
+   * Run a series of games.
    */
   public final void run() {
     try {
-      beforeGame();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return;
-    }
-
-    try{
-      gameLoop();
-    } catch (Exception e) {
-      e.printStackTrace();
-      return;
-    }
-
-    try {
-      afterGame();
+      initialize();
+      while (true) {
+        beforeGame();
+        gameLoop();
+        afterGame();
+      }
+    } catch (StopGameException e) {
+      // do nothing
     } catch (Exception e) {
       e.printStackTrace();
     }
   }
 
   /**
-   * Initialize a game.
+   * Initialize a series of games.
    */
-  void beforeGame() throws Exception {
+  void initialize() throws Exception {
     try {
       Class[] aiClasses = {gameSettings.getAI1(), gameSettings.getAI2()};
       for (Class clazz : aiClasses) {
@@ -91,11 +85,18 @@ public abstract class Game {
           String.format("Unable to create AI due to '%s'", e.getMessage()));
     }
 
-    players.forEach(AI::reset);
-
     if (gameSettings.isRender()) {
       window = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, gameSettings.isPartiallyObservable(), COLORSCHEME_BLACK);
     }
+  }
+
+  /**
+   * Initialize a single game.
+   */
+  void beforeGame() throws Exception {
+    PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
+    gameState = new GameState(pgs, unitTypeTable);
+    players.forEach(AI::reset);
   }
 
   /**
@@ -142,7 +143,9 @@ public abstract class Game {
     }
     // conduct actions
     for (int id = 0; id < players.size(); id++) {
+      if (playerActions[id] != null) {
         gameState.issueSafe(playerActions[id]);
+      }
     }
   }
 
@@ -150,7 +153,7 @@ public abstract class Game {
    * Carry out any clean up needed after a game.
    */
   void afterGame() throws Exception {
-    printGameResults();
+//    printGameResults();
   }
 
   /**
