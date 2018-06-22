@@ -23,11 +23,10 @@ import rts.units.UnitTypeTable;
  */
 public abstract class Game {
 
-  private final int GAME_UPDATE_PERIOD = 20;
-
   final GameSettings gameSettings;
-  GameState gameState;
   final UnitTypeTable unitTypeTable;
+  GameState gameState;
+  PhysicalGameState pgs;
   final List<AI> players;
   JFrame window = null;
 
@@ -38,7 +37,6 @@ public abstract class Game {
    */
   public Game(GameSettings gameSettings) {
     this.gameSettings = gameSettings;
-    PhysicalGameState pgs;
     this.unitTypeTable =
         new UnitTypeTable(gameSettings.getUTTVersion(), gameSettings.getConflictPolicy());
     try {
@@ -84,18 +82,17 @@ public abstract class Game {
       throw new IllegalArgumentException(
           String.format("Unable to create AI due to '%s'", e.getMessage()));
     }
-
-    if (gameSettings.isRender()) {
-      window = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, gameSettings.isPartiallyObservable(), COLORSCHEME_BLACK);
-    }
   }
 
   /**
    * Initialize a single game.
    */
   void beforeGame() throws Exception {
-    PhysicalGameState pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
+    pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
     gameState = new GameState(pgs, unitTypeTable);
+    if (gameSettings.isRender()) {
+      window = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, gameSettings.isPartiallyObservable(), COLORSCHEME_BLACK);
+    }
     players.forEach(AI::reset);
   }
 
@@ -103,19 +100,19 @@ public abstract class Game {
    * The main game loop.
    */
   void gameLoop() throws Exception {
-    // run game loop
-    boolean gameOver = false;
-    long nextTimeToUpdate = System.currentTimeMillis() + gameUpdatePeriod();
+    boolean gameOver;
     do {
-      if (System.currentTimeMillis() >= nextTimeToUpdate) {
-        takeAction();
-        gameOver = gameState.cycle();
+      takeAction();
+      gameOver = gameState.cycle();
+      if (gameSettings.isRender()) {
+        window.repaint();
+      }
+      try {
         if (gameSettings.isRender()) {
-          window.repaint();
+          Thread.sleep(1); // give time to the window to repaint
         }
-        nextTimeToUpdate += GAME_UPDATE_PERIOD;
-      } else {
-        Thread.sleep(1);
+      } catch (Exception e) {
+        e.printStackTrace();
       }
     } while (!gameOver && gameState.getTime() < gameSettings.getMaxCycles());
 
@@ -164,10 +161,6 @@ public abstract class Game {
    */
   AI buildAi(Class clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
     return (AI) clazz.getConstructor(UnitTypeTable.class).newInstance(unitTypeTable);
-  }
-
-  int gameUpdatePeriod() {
-    return GAME_UPDATE_PERIOD;
   }
 
   /**
