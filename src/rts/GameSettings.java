@@ -69,6 +69,7 @@ public class GameSettings {
         AGENTS.put("RangedRush", ai.abstraction.RangedRush.class);
         AGENTS.put("LightRushPO", ai.abstraction.partialobservability.POLightRush.class);
         AGENTS.put("InformedNaiveMCTS", ai.mcts.informedmcts.InformedNaiveMCTS.class);
+        AGENTS.put("PassiveAI", ai.PassiveAI.class);
         AGENTS.put("RandomAI", ai.RandomAI.class);
         AGENTS.put("RandomBiasedAI", ai.RandomBiasedAI.class);
         AGENTS.put("SocketAI", ai.socket.SocketAI.class);
