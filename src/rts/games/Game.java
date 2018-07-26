@@ -150,7 +150,10 @@ public abstract class Game {
    * Carry out any clean up needed after a game.
    */
   void afterGame() throws Exception {
-//    printGameResults();
+    if (gameSettings.isRender()) {
+      window.dispose();
+    }
+    // printGameResults();
   }
 
   /**
