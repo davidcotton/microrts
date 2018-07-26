@@ -91,6 +91,10 @@ public abstract class Game {
     pgs = PhysicalGameState.load(gameSettings.getMapLocation(), unitTypeTable);
     gameState = new GameState(pgs, unitTypeTable);
     if (gameSettings.isRender()) {
+      if (window != null) {
+        // get rid of old window
+        window.dispose();
+      }
       window = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, gameSettings.isPartiallyObservable(), COLORSCHEME_BLACK);
     }
     players.forEach(AI::reset);
@@ -150,9 +154,6 @@ public abstract class Game {
    * Carry out any clean up needed after a game.
    */
   void afterGame() throws Exception {
-    if (gameSettings.isRender()) {
-      window.dispose();
-    }
     // printGameResults();
   }
 
