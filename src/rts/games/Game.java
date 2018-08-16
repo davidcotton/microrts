@@ -3,10 +3,12 @@ package rts.games;
 import static gui.PhysicalGameStatePanel.COLORSCHEME_BLACK;
 
 import ai.core.AI;
-import ai.socket.SocketAI;
+import ai.core.AIWithComputationBudget;
+import ai.core.ContinuingAI;
+import ai.core.InterruptibleAI;
+import ai.core.PseudoContinuingAI;
 import gui.PhysicalGameStatePanel;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
@@ -163,8 +165,17 @@ public abstract class Game {
    * @param clazz The class to build.
    * @return An AI player.
    */
-  AI buildAi(Class clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-    return (AI) clazz.getConstructor(UnitTypeTable.class).newInstance(unitTypeTable);
+  AI buildAi(Class clazz) throws Exception {
+    AI bot = (AI) clazz.getConstructor(UnitTypeTable.class).newInstance(unitTypeTable);
+    if (bot instanceof AIWithComputationBudget) {
+      if (bot instanceof InterruptibleAI) {
+        return new ContinuingAI(bot);
+      } else {
+        return new PseudoContinuingAI((AIWithComputationBudget) bot);
+      }
+    }
+
+    return bot;
   }
 
   /**

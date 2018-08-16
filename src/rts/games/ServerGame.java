@@ -6,7 +6,6 @@ import static ai.socket.SocketAI.LANGUAGE_XML;
 import ai.core.AI;
 import ai.socket.SocketAI;
 import java.io.PrintWriter;
-import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import rts.GameSettings;
@@ -37,9 +36,7 @@ public class ServerGame extends Game {
   }
 
   @Override
-  AI buildAi(Class clazz)
-      throws NoSuchMethodException, IllegalAccessException, InvocationTargetException,
-          InstantiationException {
+  AI buildAi(Class clazz) throws Exception {
     if (clazz.equals(SocketAI.class)) {
       return SocketAI.createFromExistingSocket(
           DEFAULT_TIME_BUDGET,
