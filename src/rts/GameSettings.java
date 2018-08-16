@@ -88,6 +88,7 @@ public class GameSettings {
         AGENTS.put("PuppetABCDSingle", ai.puppet.PuppetSearchAB.class);
         AGENTS.put("PuppetMCTSBasic", ai.puppet.PuppetSearchMCTS.class);
         AGENTS.put("StrategyTactics", standard.StrategyTactics.class);
+        AGENTS.put("PVAIML_ED", ai.pvai.PVAIML_ED.class);
     }
 
     private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,
