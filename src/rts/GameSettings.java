@@ -31,7 +31,6 @@ public class GameSettings {
     }
 
     static final Map<String, Class> AGENTS;
-    static final Class DEFAULT_AI = ai.abstraction.WorkerRush.class;
     static final boolean DEFAULT_RENDER = true;
     static final String DEFAULT_SERVER_ADDRESS = "127.0.0.1";
     static final int DEFAULT_SERVER_PORT = 9898;
@@ -68,7 +67,7 @@ public class GameSettings {
         AGENTS.put("HeavyRush", ai.abstraction.HeavyRush.class);
         AGENTS.put("RangedRush", ai.abstraction.RangedRush.class);
         AGENTS.put("LightRushPO", ai.abstraction.partialobservability.POLightRush.class);
-        AGENTS.put("WorkerRushPO", ai.abstraction.partialobservability.POLightRush.class);
+        AGENTS.put("WorkerRushPO", ai.abstraction.partialobservability.POWorkerRush.class);
         AGENTS.put("InformedNaiveMCTS", ai.mcts.informedmcts.InformedNaiveMCTS.class);
         AGENTS.put("PassiveAI", ai.PassiveAI.class);
         AGENTS.put("RandomAI", ai.RandomAI.class);
@@ -89,7 +88,7 @@ public class GameSettings {
         AGENTS.put("PuppetABCDSingle", ai.puppet.PuppetSearchAB.class);
         AGENTS.put("PuppetMCTSBasic", ai.puppet.PuppetSearchMCTS.class);
         AGENTS.put("StrategyTactics", standard.StrategyTactics.class);
-        AGENTS.put("PVAIML_ED", ai.pvai.PVAIML_ED.class);
+        AGENTS.put("SVC", ai.pvai.PVAIML_ED.class);
     }
 
     private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,
@@ -217,8 +216,8 @@ public class GameSettings {
             namespace.getBoolean(ARG_IS_PARTIALLY_OBSERVABLE),
             namespace.getInt(ARG_UTT_VERSION),
             namespace.getInt(ARG_CONFLICT_POLICY),
-            AGENTS.getOrDefault(namespace.getString(ARG_PLAYER_1), DEFAULT_AI),
-            AGENTS.getOrDefault(namespace.getString(ARG_PLAYER_2), DEFAULT_AI),
+            AGENTS.get(namespace.getString(ARG_PLAYER_1)),
+            AGENTS.get(namespace.getString(ARG_PLAYER_2)),
             namespace.getBoolean(ARG_RENDER)
         );
     }

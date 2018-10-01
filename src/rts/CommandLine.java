@@ -1,6 +1,5 @@
 package rts;
 
-import static rts.GameSettings.DEFAULT_AI;
 import static rts.GameSettings.DEFAULT_CONFLICT_POLICY;
 import static rts.GameSettings.DEFAULT_IS_PARTIALLY_OBSERVABLE;
 import static rts.GameSettings.DEFAULT_MAX_CYCLES;
@@ -75,8 +74,8 @@ public class CommandLine {
         .type(Integer.class)
         .choices(1, 2, 3)
         .setDefault(DEFAULT_CONFLICT_POLICY);
-    parser.addArgument(formatArgName(ARG_PLAYER_1)).setDefault(DEFAULT_AI.toString());
-    parser.addArgument(formatArgName(ARG_PLAYER_2)).setDefault(DEFAULT_AI.toString());
+    parser.addArgument(formatArgName(ARG_PLAYER_1));
+    parser.addArgument(formatArgName(ARG_PLAYER_2));
 
     Namespace namespace = null;
     try {
