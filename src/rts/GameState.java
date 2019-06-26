@@ -4,9 +4,18 @@ import com.eclipsesource.json.Json;
 import com.eclipsesource.json.JsonArray;
 import com.eclipsesource.json.JsonObject;
 import com.eclipsesource.json.JsonValue;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
+
+import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
 import rts.units.Unit;
 import rts.units.UnitType;
 import rts.units.UnitTypeTable;
@@ -89,6 +98,12 @@ public class GameState {
         return unitActions;
     }
     
+    
+    public UnitTypeTable getUnitTypeTable() {
+        return utt;
+    }
+        
+    
     /**
      * Returns the action of a unit
      * @param u
@@ -147,15 +162,6 @@ public class GameState {
     public PhysicalGameState getPhysicalGameState() {
         return pgs;
     }
-
-    /**
-     * Returns the {@link UnitTypeTable} associated with this state
-     * @return
-     */
-    public UnitTypeTable getUnitTypeTable() {
-        return utt;
-    }
-    
     
     
     /**
@@ -329,7 +335,7 @@ public class GameState {
                 p.m_b = new UnitAction(UnitAction.TYPE_NONE, l);
             }
             
-            // get the unit that corresponds to that action (since the state might have been closed):
+            // get the unit that corresponds to that action (since the state might have been cloned):
             if (pgs.units.indexOf(p.m_a)==-1) {
                 boolean found = false;
                 for(Unit u:pgs.units) {
@@ -358,7 +364,10 @@ public class GameState {
                     if (pgs.getTerrain(x, y) != PhysicalGameState.TERRAIN_NONE ||
                         pgs.getUnitAt(x, y) != null) {
                         UnitAction new_ua = new UnitAction(UnitAction.TYPE_NONE, p.m_b.ETA(p.m_a));
-                        System.err.println("Player " + p.m_a.getPlayer() + " issued an illegal move action, cancelling and replacing by " + new_ua);
+                        System.err.println("Player " + p.m_a.getPlayer() + " issued an illegal move action (to "+x+","+y+") to unit "+p.m_a.getID()+" at time "+getTime()+", cancelling and replacing by " + new_ua);
+                        System.err.println("    Action: " + p.m_b);
+                        System.err.println("    Resources used by the action: " + r);
+                        System.err.println("    Unit at that coordinate " + pgs.getUnitAt(x, y));
                         p.m_b = new_ua;
                     }
                 }
@@ -726,7 +735,7 @@ public class GameState {
 
     
     /**
-     * Writes a XML representation of this state
+     * Writes a XML representation of this state into a XMLWriter
      * @param w
      */
     public void toxml(XMLWriter w) {
@@ -743,7 +752,22 @@ public class GameState {
         w.tag("/" + this.getClass().getName());
     }
     
-
+    /**
+     * Dumps this state to a XML file.
+     * It can be reconstructed later (e.g. with {@link #fromXML(String, UnitTypeTable)}
+     * @param path
+     */
+    public void toxml(String path) {
+    	try {
+			XMLWriter dumper = new XMLWriter(new FileWriter(path));
+			this.toxml(dumper);
+			dumper.close();
+		} catch (IOException e) {
+			System.err.println("Error while writing state to: " + path);
+			e.printStackTrace();
+		}
+    }
+    
     /**
      * Writes a JSON representation of this state
      * @param w
@@ -772,7 +796,7 @@ public class GameState {
     }
     
     /**
-     * Constructs a GameState from XML
+     * Constructs a GameState from a XML Element
      * @param e
      * @param utt
      * @return
@@ -794,6 +818,33 @@ public class GameState {
         }
         
         return gs;
+    }
+    
+    /**
+     * Returns the GameState previously dumped (e.g. with {@link #toxml(String)} from the specified file.
+     * @param utt
+     * @param path
+     * @return
+     */
+    public static GameState fromXML(String path, UnitTypeTable utt) {
+    	SAXBuilder builder = new SAXBuilder();
+		File xmlFile = new File(path);
+		Document document = null;
+		GameState reconstructed = null;
+		try {
+			document = (Document) builder.build(xmlFile);
+		} catch (JDOMException | IOException e) {
+			System.err.println("Error while opening file: '" + path + "'. Returning null.");
+			e.printStackTrace();
+		}
+		try {
+			reconstructed = GameState.fromXML(document.getRootElement(), utt);
+		} catch (Exception e) {
+			System.err.println("ERror while reconstructing the state from the XML element. Returning null.");
+			e.printStackTrace();
+		}
+		
+		return reconstructed;
     }
     
     /**

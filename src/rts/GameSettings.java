@@ -25,7 +25,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
 
 public class GameSettings {
 
-    enum LaunchMode {
+    public enum LaunchMode {
         STANDALONE,
         GUI,
         SERVER,
@@ -94,7 +94,7 @@ public class GameSettings {
         AGENTS.put("SVC", ai.pvai.PVAIML_ED.class);
     }
 
-    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,
+    public GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,
                           int serializationType, String mapLocation, int maxCycles,
                           boolean partiallyObservable, int uttVersion, int confictPolicy,
                           Class AI1, Class AI2, boolean render) {
@@ -102,7 +102,7 @@ public class GameSettings {
                 maxCycles, partiallyObservable, uttVersion, confictPolicy, AI1, AI2, render);
     }
 
-    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, int serverPort2,
+    public GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, int serverPort2,
                          int serializationType, String mapLocation, int maxCycles,
                           boolean partiallyObservable, int uttVersion, int confictPolicy,
                           Class AI1, Class AI2, boolean render) {
@@ -190,7 +190,18 @@ public class GameSettings {
         prop.load(is);
         return prop;
     }
-
+   
+     /**
+     * Fetches the configuration file which will be located in the path on propertiesFile.
+     */
+    public static Properties fetchConfig(String propertiesFile) throws IOException {
+        Properties prop = new Properties();
+        InputStream is = GameSettings.class.getResourceAsStream(propertiesFile);
+        if (is == null) is = new FileInputStream(propertiesFile);
+        prop.load(is);
+        return prop;
+    }
+    
     /**
      * Generates game settings based on the provided configuration file.
      */
