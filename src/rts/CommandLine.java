@@ -7,6 +7,7 @@ import static rts.GameSettings.DEFAULT_RENDER;
 import static rts.GameSettings.DEFAULT_SERIALIZATION_TYPE;
 import static rts.GameSettings.DEFAULT_SERVER_ADDRESS;
 import static rts.GameSettings.DEFAULT_SERVER_PORT;
+import static rts.GameSettings.DEFAULT_SERVER_PORT2;
 import static rts.GameSettings.DEFAULT_UTT_VERSION;
 
 import net.sourceforge.argparse4j.ArgumentParsers;
@@ -27,6 +28,7 @@ public class CommandLine {
   static final String ARG_RENDER = "render";
   static final String ARG_SERVER_ADDRESS = "address";
   static final String ARG_SERVER_PORT = "port";
+  static final String ARG_SERVER_PORT2 = "port2";
   static final String ARG_SERIALIZATION_TYPE = "serialization";
   static final String ARG_MAX_CYCLES = "maxcycles";
   static final String ARG_IS_PARTIALLY_OBSERVABLE = "po";
@@ -54,6 +56,10 @@ public class CommandLine {
         .addArgument(formatArgName(ARG_SERVER_PORT))
         .type(Integer.class)
         .setDefault(DEFAULT_SERVER_PORT);
+    parser
+        .addArgument(formatArgName(ARG_SERVER_PORT2))
+        .type(Integer.class)
+        .setDefault(DEFAULT_SERVER_PORT2);
     parser
         .addArgument(formatArgName(ARG_SERIALIZATION_TYPE))
         .type(Integer.class)

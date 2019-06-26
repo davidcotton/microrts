@@ -1,5 +1,6 @@
 package rts;
 
+
 import static rts.CommandLine.ARG_CONFLICT_POLICY;
 import static rts.CommandLine.ARG_IS_PARTIALLY_OBSERVABLE;
 import static rts.CommandLine.ARG_LAUNCH_MODE;
@@ -11,6 +12,7 @@ import static rts.CommandLine.ARG_RENDER;
 import static rts.CommandLine.ARG_SERIALIZATION_TYPE;
 import static rts.CommandLine.ARG_SERVER_ADDRESS;
 import static rts.CommandLine.ARG_SERVER_PORT;
+import static rts.CommandLine.ARG_SERVER_PORT2;
 import static rts.CommandLine.ARG_UTT_VERSION;
 
 import java.io.FileInputStream;
@@ -34,6 +36,7 @@ public class GameSettings {
     static final boolean DEFAULT_RENDER = true;
     static final String DEFAULT_SERVER_ADDRESS = "127.0.0.1";
     static final int DEFAULT_SERVER_PORT = 9898;
+    static final int DEFAULT_SERVER_PORT2 = 0;
     static final int DEFAULT_SERIALIZATION_TYPE = 2;
     static final int DEFAULT_MAX_CYCLES = 5000;
     static final boolean DEFAULT_IS_PARTIALLY_OBSERVABLE = false;
@@ -42,7 +45,7 @@ public class GameSettings {
 
     // Networking
     private String serverAddress;
-    private int serverPort;
+    private int[] serverPorts = new int[2];
     private LaunchMode launchMode;
     private int serializationType;
 
@@ -95,9 +98,26 @@ public class GameSettings {
                           int serializationType, String mapLocation, int maxCycles,
                           boolean partiallyObservable, int uttVersion, int confictPolicy,
                           Class AI1, Class AI2, boolean render) {
+        init(launchMode, serverAddress, serverPort, 0, serializationType, mapLocation,
+                maxCycles, partiallyObservable, uttVersion, confictPolicy, AI1, AI2, render);
+    }
+
+    private GameSettings( LaunchMode launchMode, String serverAddress, int serverPort, int serverPort2,
+                         int serializationType, String mapLocation, int maxCycles,
+                          boolean partiallyObservable, int uttVersion, int confictPolicy,
+                          Class AI1, Class AI2, boolean render) {
+        init(launchMode, serverAddress, serverPort, serverPort2, serializationType, mapLocation,
+                maxCycles, partiallyObservable, uttVersion, confictPolicy, AI1, AI2, render);
+    }
+
+    private void init( LaunchMode launchMode, String serverAddress, int serverPort, int serverPort2,
+                 int serializationType, String mapLocation, int maxCycles,
+                boolean partiallyObservable, int uttVersion, int confictPolicy,
+                Class AI1, Class AI2, boolean render) {
         this.launchMode = launchMode;
         this.serverAddress = serverAddress;
-        this.serverPort = serverPort;
+        this.serverPorts[0] = serverPort;
+        this.serverPorts[1] = serverPort2;
         this.serializationType = serializationType;
         this.mapLocation = mapLocation;
         this.maxCycles = maxCycles;
@@ -114,7 +134,10 @@ public class GameSettings {
     }
 
     public int getServerPort() {
-        return serverPort;
+        return serverPorts[0];
+    }
+    public int getServerPort2() {
+        return serverPorts[1];
     }
 
     public int getSerializationType() {
@@ -177,6 +200,12 @@ public class GameSettings {
 
         String serverAddress = prop.getProperty("server_address");
         int serverPort = readIntegerProperty(prop, "server_port", 9898);
+        int serverPort2 = 0;
+        try {
+            serverPort2 = readIntegerProperty(prop, "server_port2", 0);
+        } catch (Exception e) {
+            // do nothing
+        }
         int serializationType = readIntegerProperty(prop, "serialization_type", 2);
         String mapLocation = prop.getProperty("map_location");
         int maxCycles = readIntegerProperty(prop, "max_cycles", 5000);
@@ -193,7 +222,7 @@ public class GameSettings {
             // do nothing
         }
 
-        return new GameSettings(launchMode, serverAddress, serverPort,
+        return new GameSettings(launchMode, serverAddress, serverPort, serverPort2,
                                 serializationType, mapLocation, maxCycles,
                                 partiallyObservable, uttVersion, conflictPolicy, 
                                 AI1, AI2, true);
@@ -210,6 +239,7 @@ public class GameSettings {
             LaunchMode.valueOf(namespace.getString(ARG_LAUNCH_MODE).toUpperCase()),
             namespace.getString(ARG_SERVER_ADDRESS),
             namespace.getInt(ARG_SERVER_PORT),
+            namespace.getInt(ARG_SERVER_PORT2),
             namespace.getInt(ARG_SERIALIZATION_TYPE),
             namespace.getString(ARG_MAP),
             namespace.getInt(ARG_MAX_CYCLES),
@@ -236,6 +266,7 @@ public class GameSettings {
         sb.append("Running as Server: ").append( getLaunchMode().toString() ).append("\n");
         sb.append("Server Address: ").append( getServerAddress() ).append("\n");
         sb.append("Server Port: ").append( getServerPort() ).append("\n");
+        sb.append("Server Port 2: ").append( getServerPort2() ).append("\n");
         sb.append("Serialization Type: ").append( getSerializationType()).append("\n");
         sb.append("Map Location: ").append( getMapLocation() ).append("\n");
         sb.append("Max Cycles: ").append( getMaxCycles() ).append("\n");
