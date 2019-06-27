@@ -92,6 +92,9 @@ public class GameSettings {
         AGENTS.put("PuppetMCTSBasic", ai.puppet.PuppetSearchMCTS.class);
         AGENTS.put("StrategyTactics", standard.StrategyTactics.class);
         AGENTS.put("SVC", ai.pvai.PVAIML_ED.class);
+        AGENTS.put("Capivara", ai.competition.capivara.Capivara.class);
+        AGENTS.put("Tiamat", ai.competition.tiamat.Tiamat.class);
+        AGENTS.put("UTalca", utalca.UTalcaBot.class);
     }
 
     public GameSettings( LaunchMode launchMode, String serverAddress, int serverPort,

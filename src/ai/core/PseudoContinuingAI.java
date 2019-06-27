@@ -106,5 +106,16 @@ public class PseudoContinuingAI extends AI {
     public AIWithComputationBudget getbaseAI() {
         return m_AI;
     }
-    
+
+    @Override
+    public void preGameAnalysis(GameState gs, long milliseconds) throws Exception {
+        super.preGameAnalysis(gs, milliseconds);
+        m_AI.preGameAnalysis(gs, milliseconds);
+    }
+
+    @Override
+    public void preGameAnalysis(GameState gs, long milliseconds, String readWriteFolder) throws Exception {
+        super.preGameAnalysis(gs, milliseconds, readWriteFolder);
+        m_AI.preGameAnalysis(gs, milliseconds, readWriteFolder);
+    }
 }

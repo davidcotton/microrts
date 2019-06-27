@@ -99,7 +99,10 @@ public abstract class Game {
       }
       window = PhysicalGameStatePanel.newVisualizer(gameState, 640, 640, gameSettings.isPartiallyObservable(), COLORSCHEME_BLACK);
     }
-    players.forEach(AI::reset);
+    for(AI player: players) {
+      player.reset();
+      player.preGameAnalysis(gameState, 100);
+    }
   }
 
   /**
