@@ -66,9 +66,18 @@ public class GameSettings {
     static {
         AGENTS = new HashMap<>();
         AGENTS.put("WorkerRush", ai.abstraction.WorkerRush.class);
+        AGENTS.put("WorkerDefense", ai.abstraction.WorkerDefense.class);
+        AGENTS.put("WorkerRushPlusPlus", ai.abstraction.WorkerRushPlusPlus.class);
         AGENTS.put("LightRush", ai.abstraction.LightRush.class);
+        AGENTS.put("LightDefense", ai.abstraction.LightDefense.class);
         AGENTS.put("HeavyRush", ai.abstraction.HeavyRush.class);
+        AGENTS.put("HeavyDefense", ai.abstraction.HeavyDefense.class);
         AGENTS.put("RangedRush", ai.abstraction.RangedRush.class);
+        AGENTS.put("RangedDefense", ai.abstraction.RangedDefense.class);
+        AGENTS.put("EconomyMilitaryRush", ai.abstraction.EconomyMilitaryRush.class);
+        AGENTS.put("EconomyRush", ai.abstraction.EconomyRush.class);
+        AGENTS.put("EconomyRushBurster", ai.abstraction.EconomyRushBurster.class);
+        AGENTS.put("SimpleEconomyRush", ai.abstraction.SimpleEconomyRush.class);
         AGENTS.put("LightRushPO", ai.abstraction.partialobservability.POLightRush.class);
         AGENTS.put("WorkerRushPO", ai.abstraction.partialobservability.POWorkerRush.class);
         AGENTS.put("InformedNaiveMCTS", ai.mcts.informedmcts.InformedNaiveMCTS.class);
