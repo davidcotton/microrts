@@ -78,6 +78,8 @@ public class GameSettings {
         AGENTS.put("EconomyRush", ai.abstraction.EconomyRush.class);
         AGENTS.put("EconomyRushBurster", ai.abstraction.EconomyRushBurster.class);
         AGENTS.put("SimpleEconomyRush", ai.abstraction.SimpleEconomyRush.class);
+        AGENTS.put("CRush_V1", ai.abstraction.cRush.CRush_V1.class);
+        AGENTS.put("CRush_V2", ai.abstraction.cRush.CRush_V2.class);
         AGENTS.put("LightRushPO", ai.abstraction.partialobservability.POLightRush.class);
         AGENTS.put("WorkerRushPO", ai.abstraction.partialobservability.POWorkerRush.class);
         AGENTS.put("InformedNaiveMCTS", ai.mcts.informedmcts.InformedNaiveMCTS.class);
